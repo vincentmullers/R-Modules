@@ -11,7 +11,7 @@ odbcGetInfo(con)
 # Check out the below query: note the "\" to escape quotes inside quotes
 sell_thru = sqlQuery(con, "SELECT sales_org, postal_cd, sold_to_desc, fiscal_week_begin, net_management_sales_usd FROM _SYS_BIC.\"BOSE.MPE_SALES/MPE_CAV_SALES_SALESACTUALS_SELLTHROUGH\" where SALES_ORG='US10'")
 
-# Check out sell_thru (do not open sell_in entirely - R will crash)
+# Check out sell_thru (do not open sell_thru df entirely - R will crash)
 head(sell_thru)
 
 # EX 1. Some postal codes have more than 5 characters. Show the different number of characters that the postal_cd field is made out of.     
@@ -66,5 +66,6 @@ sales = rbind(sell_in,sell_thru)
 nrow(sales) == nrow(sell_in) + nrow(sell_thru)
 
 # EX 11. Write the results to a local csv file (hint: use write.csv())
-write.csv(sales, "C:/Users/vm1040690/Documents/Data science/geo_mapping/Input/sales.csv")
+sales = sales[,colnames(sales) != "X"]
+write.csv(sales, "~/sales.csv", row.names = FALSE)
 
