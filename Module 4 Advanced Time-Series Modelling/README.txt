@@ -1,9 +1,11 @@
+
+ML methods:
 lstm
 xgboost
-var
-markov chain models
+markov chain models (HMM)
 AR NN
 genetic programming
 MLP
 
+VAR / SVAR / SVEC
 (Kaggle)
