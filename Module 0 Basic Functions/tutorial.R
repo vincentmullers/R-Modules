@@ -1,5 +1,6 @@
 library(dplyr)
 library(plyr)
+library(lubridate)
 
 # Before using any function you can check out some information (see help pane down right) by running a ? before the function name:
 ?seq
@@ -95,7 +96,7 @@ df$y[df$quarter == 1] < 0
 # any now will check if any of these printed values are TRUE - which is not the case,so it will print FALSE
 any(df$y[df$quarter == 1] < 0)
 
-# Loops. Let's check out some for loops. 
+# Loops. Let's check out some "for" loops. 
 # Let's say we want to interpolate between the first and last value of each quarter 
 
 for(quarter in unique(df$quarter)){
@@ -103,7 +104,7 @@ for(quarter in unique(df$quarter)){
   # I am adding a cat here which will print the quarter it is working on in the current iteration. The "\n" makes sure we add a new line after each printed value. 
   cat(quarter,"\n")
   
-  # define a temp variable that is df at the quarter of the current iteration
+  # define a temp variable that equals df filtered on the quarter of the current iteration
   temp = df[df$quarter == quarter,] 
   
   # define first and last value of the quarter
@@ -142,8 +143,7 @@ while(sum(df$y) < 100){
   
 }
 
-# In my case, after adding 6 random values to all y's, I've reached a total of 115! This will very likely be different for you, as in this case we did not set.seed. 
-
+# After adding 6 random values to all y's, We've reached a total of 115! We're getting the same results - although we're random sampling - as we set a seed in the beginning.
 
 # Finally, I am going to aggregate the y values by quarter
 agg = aggregate(y ~ quarter, data = df, sum)

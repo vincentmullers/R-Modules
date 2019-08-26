@@ -23,8 +23,8 @@ str(df)
 # We've got quite a lot of data here
 nrow(df)
 
-# Let's focus down on ecom
-df = df[df$channel == "ECOM",]
+# Let's focus down on Best Buy
+df = df[df$channel == "BB",]
 
 # We'll leave zip codes for what they are now, and aggregate sales over fiscal week
 df = aggregate(formula = sales ~ fwk, 
@@ -34,6 +34,10 @@ df = aggregate(formula = sales ~ fwk,
                   )
 
 # Notice I use na.rm=TRUE as there may be NAs in the sales field
+
+# Only look at last 5 years
+years = tail(unique(year(df$fwk)),5)
+df = df[year(df$fwk) %in% years,]
 
 # Let's convert to dates and plot
 df$fwk = as.Date(df$fwk)
@@ -56,8 +60,11 @@ all_dates = unique(df$fwk)
 all_dates = all_dates[order(all_dates)]
 
 # If 1 april is not a sunday, we will replace the date to match the previous week starting sunday, so we will fix the broken week
+# In earlier years, the previous week is non existent, so we need to create the date. 
 for(i in dates_collapse){
-  df$fwk[df$fwk == i] = all_dates[which(all_dates == i)-1]
+  exists = as.numeric(all_dates[which(all_dates == i)+1] - all_dates[which(all_dates == i)+1]) == 7
+  
+  if(exists){df$fwk[df$fwk == i] = all_dates[which(all_dates == i)-1]}else{df$fwk[df$fwk == i] = all_dates[which(all_dates == i)-1]+days(7)}
 }
 
 # Now aggregate so the sales with the same date are added
@@ -65,7 +72,7 @@ df = aggregate(sales ~ fwk, df, function(x) {sum(x,na.rm=TRUE)})
 df$wday = NULL
 
 plot(df,type='l')
-# Nice! 
+# That fixed most except for 2016 one.. not sure what happened there.. 
 
 # That's enough from me for now. Let's save what we have. I'll handover the data cleaning and exploration work to you in practice.R.
-write.csv(df, "sales_cl.csv")
+write.csv(df, "sales_m2.csv")

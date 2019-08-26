@@ -6,7 +6,7 @@ df = seq(1,1000)
 # Plot df in a line chart
 plot(df, type='l')
 
-# Compute the log of the 6th highest value. Hint: you could use order() to order descending (or ascending)
+# Compute the log of the 6th highest value. Hint: you could use order() to order a variable
 log(df[order(-df)][6])
 
 # Subtract 1 from all uneven numbers. Hint: Use modulus %%. 
@@ -20,7 +20,7 @@ df = data.frame("date" = dates, "y" = df)
 # Randomly shuffle the observations over the dates. Hint: use sample() on the sequence of rows.
 df$y = df$y[sample(seq(1,nrow(df)))]
 
-# take the sqrt over the generated values
+# take the sqrt of the generated values
 df$y = sqrt(df$y)
 
 # Remove all values above 15
