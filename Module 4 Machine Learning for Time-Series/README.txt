@@ -16,5 +16,5 @@ Non-parametric model is when your N is not fixed, so you can add more and more s
 Which one is better to use? This depends on the level of noise. If your point cloud is almost a perfect circle (noise is very small) then non-parametric is better since with each new side approximates a circle better and better. But, if there is a lot of noise then adding sides will only model that noise and you would be better off sticking with 4 sides (rectangle), so parametric model would be better in a noisy case.
 "
 
-Let's have a look at some Machine Learning methods to Time-Series!
+Let's have a look at a Machine Learning framework to Time-Series!
 
