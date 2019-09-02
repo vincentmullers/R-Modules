@@ -3,26 +3,20 @@ library(lubridate)
 # Let's practice! 
 
 # Set working directory and open the file we saved at the end of the tutorial. Use row.names = "X" to prevent another column is added with the row index numbers.
-setwd("C:/Users/vm1040690/Documents/Data science/git/R-Modules/")
-df = read.csv("sales_m2.csv",sep=",", as.is=TRUE, row.names = "X")
-df$fwk = as.Date(df$fwk)
+
 
 # add a variable for year and month
-df$year = year(df$fwk)
-df$month = month(df$fwk)
+
 
 # Plot the data
-plot(df[,c("fwk","sales")],type='l')
+plot()
 
 # It looks like there is clear seasonality in the time-series. Weekly data however is troublesome to deal with in time-series models. This is because a year is never split into 
 # an integer number of weeks... Let's check out what that means..
 
 # Create 4 plots in one panel each one showing the month Dec of the years 2015 through 2018. HINT: I've added par(mfrow=c(2,2)) to create the grid for the plots, just plot 4 times to see the grid filled in. 
 par(mfrow=c(2,2))
-plot(df[df$year == "2015" & df$month == 12,c("fwk","sales")],type='o')
-plot(df[df$year == "2016" & df$month == 12,c("fwk","sales")],type='o')
-plot(df[df$year == "2017" & df$month == 12,c("fwk","sales")],type='o')
-plot(df[df$year == "2018" & df$month == 12,c("fwk","sales")],type='o')
+
 
 # Notice that some years have 5 weeks in dec, others 4. Depending on when what week exactly starts, the peak shifts quite a bit.... Specifically, people's purchases go up dramatically 
 # the week before christmas, and dives down after. Depending on when exactly our weeks start, we see the peak moving.. 
@@ -32,41 +26,22 @@ plot(df[df$year == "2018" & df$month == 12,c("fwk","sales")],type='o')
 # Suppose we build a model that looks back 1 year to predict into the future. This would be very useful in knowing seasonality in the data. 
 # Build a model below that always predicts sales to be the same as 52 weeks ago. HINT: use shift() from the data.table package
 library(data.table)
-df$m1 = shift(df$sales,52)
 
 # plot the original series using type='l'
 par(mfrow=c(1,1))
-plot(df[,c("fwk","sales")],type='l')
 
 # add the predictions using lines(). set col = "blue"
-lines(df[,c("fwk","m1")],col='blue')
+
 
 # In the same way we could build a model that looks back to the date that is closest to the current date -1y
 # Build a model that does this.
 
-df$match = as.Date("2001-01-01")
 
-for(i in 1:length(unique(df$fwk[!is.na(df$m1)]))){
-  cat(i,"\n")  
-  temp = as.Date(df$fwk[!is.na(df$m1)][i]) - months(12)
-  min_dif = which(abs(df$fwk - temp) == min(abs(df$fwk - temp)))
-  df$match[df$fwk == unique(df$fwk[!is.na(df$m1)])[i]] = as.Date(df$fwk[min_dif])[1]
-}
-
-df$m2 = c(rep(NA,52),unlist(lapply(df$match, function(x){df$sales[df$fwk == x]})))
 
 # Notice that there's almost no difference between model 1 and model 2 (only first prediction)
 
 # Let's see how the predictions look like. Check out high selling season again as done above using plot, lines, ylim and col. 
-par(mfrow=c(2,2))
-plot(df[df$year == "2015" & df$month == 12,c("fwk","sales")],type='o',ylim=c(0,max(df$sales)))
-lines(df[df$year == "2015" & df$month == 12,c("fwk","m1")],type='o', col="blue")
-plot(df[df$year == "2016" & df$month == 12,c("fwk","sales")],type='o',ylim=c(0,max(df$sales)))
-lines(df[df$year == "2016" & df$month == 12,c("fwk","m1")],type='o',col="blue")
-plot(df[df$year == "2017" & df$month == 12,c("fwk","sales")],type='o',ylim=c(0,max(df$sales)))
-lines(df[df$year == "2017" & df$month == 12,c("fwk","m1")],type='o',col="blue")
-plot(df[df$year == "2018" & df$month == 12,c("fwk","sales")],type='o',ylim=c(0,max(df$sales)))
-lines(df[df$year == "2018" & df$month == 12,c("fwk","m1")],type='o',col="blue")
+
 
 # Note that some peaks are wrong. 
 # The main reason is that we have the largest peak (besides BF) in the week before christmas. Depending on when our fiscal week starts, this week gets broken into pieces.
@@ -108,6 +83,6 @@ plot(df[df$year == "2018" & df$month == 12,c("fwk","sales")],type='o',ylim=c(0,m
 
 # Allows us to compare the same weeks. 
 # Let's save what we have. 
-write.csv(df_cw,"df_m2.csv")
+write.csv()
 
 
