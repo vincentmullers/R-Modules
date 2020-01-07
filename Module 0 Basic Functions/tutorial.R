@@ -1,160 +1,186 @@
-library(dplyr)
-library(plyr)
-library(lubridate)
+## This panel is the Script panel. Everything we execture from here will be send to the console below and executed. 
+## You can execute from the terminal too, but the script allows us to neatly organize code.  
+## Execute code line by line by pressing contr + enter. This will skip comment lines (starting with # - don't want to run these). 
 
-# Before using any function you can check out some information (see help pane down right) by running a ? before the function name:
-?seq
+# R has a variety of ready to use data sets build in. Let's load one of them, called USArrests. 
+data("USArrests")
 
-# Let's generate some dates
-dates = seq(as.Date("2019-01-01"),as.Date("2019-12-01"),by='week')
+# This data is now assigned to the variable USArrests.
+USArrests
 
-## .. and some numbers drawn from a normal distribution with the same length as the dates vector
-# First set the seed to make sure we get the same result every time we run this
-set.seed(5)
-y = rnorm(length(dates), mean = 0, sd = 1)
+# Note in the environment panel. there's a varable called USArrests. Open it to see it in a new tab.
+# Let's check out what kind of structure this data is in. 
+str(USArrests)
 
-# Combine the two into a dataframe 
-df = data.frame(dates,y)
+# Note we are dealing with a data frame with 4 variables. The state is not one of them, this is captured in the rownames. 
+rownames(USArrests)
 
-# Let's see how this looks like - use type='l' for a line plot
-plot(df,type='l')
+# For some functions we need to provide more than 1 argument. In case yo.u are not sure which one's need to be supplied,
+# run ? before the function to get some help (see help pane down right).
+?head
 
-# check out data type
-str(df)
+# In this case we need to add an "n" parameter that tells the function how many rows to print. Let's check out the top 5 rows of USArrests.
+head(USArrests, n = 5)
 
-# Let's add some details about the date
-df$week = week(df$dates)
-df$year = year(df$dates)
+# We want to be working with the rows and columns of this data set. Let's first see how we can access a certain column.
+# There's several ways of doing this: Using "$" and Using "[]". 
+USArrests$Murder
+USArrests["Murder"]
 
-# Get rid of columns
-df[,c("week","year")] = NULL
-head(df)
+# Note that the first method takes only the values and therefore the data structure changes to a numeric vector. The second method leaves the 
+# initial data structure intact, and we are left with a data frame with 1 column. 
+str(USArrests$Murder)
+str(USArrests["Murder"])
 
-# Let's reintroduce them in another way: Using so called piping (%>%). This means that the result of one line is carried over to the next one. We add a pipe after each operation.
-# the dplyr library is used here
-df = df %>% 
-  mutate("week" = week(df$dates)) %>%
-  mutate("year" = year(df$dates)) %>%
-  mutate("quarter" = quarter(df$dates))
+# The states are not one of the variables, but instead saved as row names. We would like to have the states in a separate variable in the 
+# data frame. Let's define a column called "State".
+USArrests$State = rownames(USArrests)
+head(USArrests)
 
-# How can we access the year column of our data frame? 2 options. 
-df[,c("year")]
-df[["year"]]
+# We can get rid of the rownames as follows
+rownames(USArrests) = NULL
+head(USArrests)
 
-# How would that work for a list?
-# Let's first create a list for each quarter
-df = split(df,f = df$quarter)
+# In the same way we can get rid of a column
+USArrests$Assault = NULL
 
-# Let's see how our data structure looks now
-str(df)
+# Next we want to grab certain rows. Suppose we only want to show the 5th row. R starts indexing at 1 so you get the 5th row by typing 5.  
+USArrests[5,]
 
-# We've got a list of 4 data frames! one for each quarter. 
-# Access the data frame of the second quarter
-df[[2]]
+# Note we added a "," in between the brackets. The left side of the "," indicates which rows we want, and the right side indicates which columns we want.
+# In case we do not specify column names, we get all columns for the 5th row. 
+# If we only want the 5th row of the "State" column, try the following.
+USArrests[5, "State"]
 
-# Now let's print the year of this quarter - multiple ways.. 
-df[[2]][["year"]]
-df[[2]]$year
-df[[2]][,c("year")]
+# Let's try some filtering on rows. We can use the "==" sign to test if a value in a certain column of a data frame is equal to a specified string. 
+# We know "California" is one of the values in the "State" column. Let's see what the "==" tells us. 
+USArrests$State == "California"
 
-# R uses [,] to indicate which columns and rows we want (on the left of the , the rows; on the right the columns). If we use [[]] then we are concentrating only on columns.  
+# It gives us a binary vector telling us for each row in the State column if it's equal to "California". We can use this binary vector to do filtering
+# on rows. Filtering on the rows where State == "California".
+USArrests[USArrests$State == "California",]
 
-# Let's convert back to a data frame. Put .id to the value it should add for the names of the lists (in this case we split on quarter).
-df = ldply(df, .id = "quarter")
+# The binary vector tells us which rows to take (the one's that are TRUE). As I've not indicated any columns, the function returns all columns. 
+# Now let's do the same for columns.
+colnames(USArrests)
+colnames(USArrests) == "State"
 
-## Filtering. 
-# Let's filter out quarter 2.
-# notice we need to indicate the filter on the left side of [,] as we're filtering on the rows!
-# first, let's see what happens if we indicate the requirement:
-df$quarter != 2
+# This gives us for each column name, whether it's equal to "State". If it's TRUE, we want to keep the column. 
+USArrests[,colnames(USArrests) == "State"]
 
-# It returns a sequence of TRUE and FALSE with the length of the data frame. We want to keep the rows where we see TRUE, and remove the ones that returned FALSE. We do this as follows:
-df = df[df$quarter != 2,]
+# There's easier ways to do the above, but it's helpful in learning how to filter on columns and rows. 
+# Similarly we can filter based on more than 1 condition at the same time. Let's filter on the rows where Murder > 5 AND UrbanPop > 70
+USArrests[USArrests$Murder > 5 & USArrests$UrbanPop > 70,]
 
-# Let's check if the second quarter is gone
-unique(df$quarter)
+# Filtering based on an "or" condition can be done using "|".
+USArrests[USArrests$Murder > 10 | USArrests$UrbanPop > 90,]
 
-# Now let's remove a column, notice we need to indicate the filter on the right side of [,]
-# first let's set up the filter
-colnames(df) != "week"
+# Filtering on every row except where State equals "California"? Add a ! to change signs in the binary TRUE/FALSE vector. 
+USArrests[USArrests$State != "California",]
 
-# All of them are true except for the third one. So let's remove the third column
-df = df[,colnames(df) != "week"]
-head(df)
+# State is either California or Florida?
+USArrests[USArrests$State == "California" | USArrests$State == "Florida",]
 
-# we can have multiple conditions too. Let's look at negative values in Q1.
-df$y[df$y < 0 & df$quarter == 1]
+# Doing to above can be cumbersone with many states (OR conditions). We can use %in% to make this easier. 
+USArrests[USArrests$State %in% c("California","Florida"),]
 
-# lets put these to 0
-df$y[df$y <0 & df$quarter == 1] = 0
+# In many cases, we do not want to hard-code the threshold numbers as done above. Maybe we want to pick the states that are in the top 10% murder rates.
+# For that we would need a quantile function.
+?quantile
 
-# no negative values in the first quarter anymore!
-plot(df$y,type='l')
+# Let's save the top 10% quantile to a variable and use it to filter on the right rows. 
+quant = quantile(USArrests$Murder, probs = 0.9)
+quant
+USArrests[USArrests$Murder >= quant,]
 
-# check using any() if there's values below 0 in the first quarter
-df$y[df$quarter == 1] < 0
-# any now will check if any of these printed values are TRUE - which is not the case,so it will print FALSE
-any(df$y[df$quarter == 1] < 0)
+# If we want to continue with this selection, we need to overwrite the existing data set as follows.
+USArrests = USArrests[USArrests$Murder >= quant,]
+USArrests
 
-# Loops. Let's check out some "for" loops. 
-# Let's say we want to interpolate between the first and last value of each quarter 
+# Finally, let's order the data set along Murder
+USArrests = USArrests[order(USArrests$Murder, decreasing = TRUE),]
+USArrests
 
-for(quarter in unique(df$quarter)){
+
+## Let's load in another data set and try some other useful functions. 
+data("iris")
+iris
+
+# In the iris data set we have multiple observations by species. In this case we could quite easily check which unique species we have in our data.
+# If we had a much larger data set, this would be a tedious task. We can use the unique() function to check this quickly. 
+unique(iris$Species)
+
+# Some other questions about the data set are answered in the below section and some new functions are introduced.
+
+# Is there a "setosa" flower that has sepal.length bigger than 6.5?
+any(iris$Sepal.Length[iris$Species == "setosa"] > 5.5) # the any function is TRUE if there is any TRUE value in the binary vector created. 
+
+# How many? 2 ways to check are shown below. 
+length(iris$Species[iris$Sepal.Length > 5.5 & iris$Species == "setosa"])
+nrow(iris[iris$Sepal.Length > 5.5 & iris$Species == "setosa",])
+
+# Are there any duplicates in the data? (two plants with same properies)
+iris[duplicated(iris),]
+
+# Which rows are duplicates?
+which(duplicated(iris))
+which(duplicated(iris, fromLast = TRUE))
+
+iris[c(which(duplicated(iris)),which(duplicated(iris, fromLast = TRUE))),] # combining above two indices into a column using "c"
+
+# What is the mean petal length for versicolor flowers?
+mean(iris$Petal.Length[iris$Species == "versicolor"])
+
+# What is the mean petal length by species?
+aggregate(Petal.Width ~ Species, data = iris, FUN = mean) # the left side of the "~" indicates the variables we want to aggregate, the right side indicates by what varables. IF more than 1, add a "+" sign in between varable names.  
+
+# What is the mean of all numeric columns by species?
+aggregate(. ~ Species, data = iris, FUN = mean) # the "." means all columns except columns indicated right of the "~"
+
+## Finally, let's look at using loops. We'll check out the "for" loop and the "while" loop. 
+# Let's say we want to take several actions for each of the species. This could be handled by a for loop. 
+# Suppose we want to remove the flower with the lowest petal.length for each flower type.
+# first let's see what the lowest petal.lengths are by flower type:
+aggregate(Petal.Length ~ Species, data = iris, min)
+nrow(iris)
+
+# now remove the smallest by species:
+for(i in unique(iris$Species)){
   
-  # I am adding a cat here which will print the quarter it is working on in the current iteration. The "\n" makes sure we add a new line after each printed value. 
-  cat(quarter,"\n")
+  # We execute the following for each unique species in the iris data set. "i" will loop over the unique values of species.
+  # Let's define which row we want to remove.
+  rm = which(iris$Species == i & iris$Petal.Length == min(iris$Petal.Length[iris$Species == i]))
   
-  # define a temp variable that equals df filtered on the quarter of the current iteration
-  temp = df[df$quarter == quarter,] 
-  
-  # define first and last value of the quarter
-  first_value = temp$y[1]  
-  last_value = tail(temp$y,1)
-  
-  # change y to be the interpolated values between first and last value of the quarter. I use the function approx to do the interpolation here.
-  df$y[df$quarter == quarter] = approx(x = c(first_value,last_value), n = nrow(temp))$y
-  
+  # remove the row from the iris data frame
+  iris = iris[-rm,]            
+
 }
 
-# check out what happened
-plot(df[,c("dates","y")])
+# Let's see what the shorted petal.lengths are by species. Note they are higher now as we removed the smaller one's. 
+aggregate(Petal.Length ~ Species, data = iris, min)
+nrow(iris) # We've removed 3 rows. One for each species. 
 
-# first quarter started at 0 and ended at 0 so simply stayed at 0. 
 
-# One other loop is the while loop. 
-# Let's say we want to keep adding a random positive number to all values in the data frame, until the total reaches at least 1,000
-# at this point the total is:
-sum(df$y)
+## One other loop is the "while" loop. 
+# Let's say we want to keep removing the lowest petal.lengths until the total petal.length of all virginica flowers is less than 150. 
+current_total = sum(iris$Petal.Length[iris$Species == "virginica"])
+
+# we have 49 observations for the Virginica flower left
+nrow(iris[iris$Species == "virginica",]) 
 
 # let's define the while loop:
-while(sum(df$y) < 100){
+while(sum(iris$Petal.Length[iris$Species == "virginica"]) >= 150){
   
-  # Runif means we're sampling from a uniform distribution, so all values are equally likely. We specify n = 1 as we want to sample one value that we're going to add to the values in the df. 
-  # I specify that the minimum value of the distribution is 0 and max is 1.
-  add = runif(1, min = 0, max = 1)
+  # Removing the smallest petal length flower from the virginica species. 
+  rm = which(iris$Species == "virginica" & iris$Petal.Length == min(iris$Petal.Length[iris$Species == "virginica"]))
   
-  # Let's print what we are adding at each iteration
-  cat("adding:", add,"\n")
-  
-  df$y = df$y + add
-
-  # Let's also print the total at this moment to see how close we are to our goal of a total value of 100.
-  cat("total at this point:", sum(df$y),"\n")
+  # remove the row from the iris data frame
+  iris = iris[-rm,]            
   
 }
 
-# After adding 6 random values to all y's, We've reached a total of 115! We're getting the same results - although we're random sampling - as we set a seed in the beginning.
-
-# Finally, I am going to aggregate the y values by quarter
-agg = aggregate(y ~ quarter, data = df, sum)
-agg
+# We are now left with 25 flowers with the highest petal width
+nrow(iris[iris$Species == "virginica",]) 
+sum(iris$Petal.Length[iris$Species == "virginica"]) # note that the while loop stopped because the sum of petal lengths dropped below 150. 
 
 # This is the end :) Move on to the practice module!
-
-
-
-
-
-
-
-
