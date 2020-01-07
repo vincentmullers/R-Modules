@@ -13,6 +13,11 @@ getwd()
 # to that folder. I placed it in my git folder under R-Modules. 
 setwd("C:/Users/vm1040690/Documents/Data science/git/R-Modules/")
 
+
+# trick for setwd().
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+# read in data
 df = read.csv("./sales.csv", 
                  sep=",", 
                  as.is = TRUE)
