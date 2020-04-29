@@ -135,6 +135,7 @@ sell_thru1$POSTAL_CD2 = NULL
 sell_thru1$POSTAL_CD3 = NULL
 sell_thru1$POSTAL_CD4 = NULL
 sell_thru1$POSTAL_CD6 = NULL
+sell_thru1$SOLD_TO_DESC3 = NULL
 sell_thru1$SOLD_TO_DESC = NULL
 
 
@@ -160,9 +161,15 @@ names(sell_in1)[names(sell_in1) == "NET_MANGEMENT_SALES_USD"] <- "NET_MANAGEMENT
 names(sell_in1)
 names(sell_thru1)
 
-identical(names(sell_in1),names(sell_thru1))
-# all(colnames(sell_in1) %in% colnames(sell_thru1))
 
+## Check if colnames are the same 
+all(colnames(sell_in1) %in% colnames(sell_thru1))
+all(colnames(sell_thru1) %in% colnames(sell_in1))
+
+identical(names(sell_in1),names(sell_thru1))
+
+## Needs to be in same order for identical to work
+identical(names(sell_in1)[order(names(sell_in1))], names(sell_thru1)[order(names(sell_thru1))])
 
 # EX 10. Join the two dataframes by using rbind() ("rowbind").
 merged <- rbind(sell_in1, sell_thru1)
@@ -171,7 +178,7 @@ merged <- rbind(sell_in1, sell_thru1)
 # nrow(sales) == nrow(sell_in) + nrow(sell_thru)
 
 # EX 11. Write the results to a local csv file. Hint: use write.csv().
-write.csv(merged, "C:/Users/MW1016619/OneDrive - Bose Corporation/module1.csv")
+# write.csv(merged, "./data.csv")
 
 
 
