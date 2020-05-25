@@ -1,2 +1,0 @@
-Prophet Programming: https://facebook.github.io/prophet/docs/quick_start.html
-Prophet Paper: https://peerj.com/preprints/3190.pdf
