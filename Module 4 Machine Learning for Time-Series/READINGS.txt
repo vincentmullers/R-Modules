@@ -1,8 +1,0 @@
-https://www.kaggle.com/c/web-traffic-time-series-forecasting/discussion/38352
-
-Bunch of other interesting (more advanced) non-parametric frameworks that can be used for time-series analysis:
-- (Vanilla) Multi-Layer Perceptrons (MLP)
-- Long Short Term Memory (Recursive Neural Networks)
-- Hidden Markov Chain Models (HMM) 
-- Autoregressive Neural Networks (AR NN)
-- Genetic Programming (GP)
