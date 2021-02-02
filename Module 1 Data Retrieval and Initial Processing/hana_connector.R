@@ -12,10 +12,8 @@ library(stringr)
 # ===== Set up connection and run query ===== #
 # Using the odbc libraries, we will set up a connection to hana as follows. The name you filled in should correspond
 # to the DSN name in data source manager.
-con <- odbcConnect("HANA")
-
-attributes(con)
-odbcGetInfo(con)
+# you may need to add uid and pw arguments to the below function for it to work. 
+con <- RODBC::odbcConnect("HANA")
 
 # Now the connection is set up, we can query the database using a SQL statement. 
 # Check out the below query. Note the "\" to escape quotes inside quotes. It will take a minute for the query to run.

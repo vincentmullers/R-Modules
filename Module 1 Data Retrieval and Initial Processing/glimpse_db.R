@@ -7,6 +7,7 @@ library(dbplyr)
 # Using the odbc libraries, we will set up a connection to hana as follows. The name you filled in should correspond
 # to the DSN name in data source manager. In my case, this is simply "HANA". R will look up the connection parameters it needs from the 
 # data source manager(server name / credentials / etc) and set up the connection.  
+# you may need to add uid and pwd arguments to the below function for it to work
 rodbc <- odbc::dbConnect(odbc::odbc(), dsn = "HANA")
 
 # If we do not yet know which table we need, we could list the tables using the following command. 
@@ -20,10 +21,10 @@ dbListTables(rodbc, table_name = "BOSE.MPE_SALES/%SELLTHROUGH%")
 
 # Now suppose we know we know the table name we want to retrieve some data from (US sell through). We have its name, and can validate we have the right name using this 
 # command. 
-dbExistsTable(rodbc, table_name = "BOSE.MPE_SALES/MPE_CAV_SALES_SALESACTUALS_SELLTHROUGH_AM")
+dbExistsTable(rodbc, "BOSE.MPE_SALES/MPE_CAV_SALES_SALESACTUALS_SELLTHROUGH_AM")
 
 # With the following command we can explore what fields are in the view we want to query. 
-dbListFields(rodbc,'BOSE.MPE_SALES/MPE_CAV_SALES_SALESACTUALS_SELLTHROUGH_AM')
+dbListFields(rodbc, 'BOSE.MPE_SALES/MPE_CAV_SALES_SALESACTUALS_SELLTHROUGH_AM')
 
 # Now we can set a so-called "pointer" to the database table. We have to certain syntax to make sure dbplyr knows what schema the table is in.  
 service = tbl(rodbc, dbplyr::in_schema('_SYS_BIC','\"BOSE.MPE_SALES/MPE_CAV_SALES_SALESACTUALS_SELLTHROUGH_AM\"'))
