@@ -145,8 +145,3 @@ plot(future[c("ds","sales")],type="l", ylim =c(0,max(future$sales, na.rm=TRUE)))
 lines(future[c("ds","pred")], col="blue")
 
 
-# It looks like the model has focused too much on the recent trend now, as it forecasts the decline to continue. 
-# We may need to include some bounds on the prediction and give it some more intelligence. 
-# I'll leave that up to you in practice.R
-
-
