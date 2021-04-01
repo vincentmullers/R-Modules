@@ -34,7 +34,7 @@ unique(nchar(as.character(sell_thru$POSTAL_CD)))
 # EX 4. SOLD_TO_DESC includes all resellers. Transform the field to split out "BB", transform any other values to "RSL". 
 # (Hint: use ifelse() on the SOLD_TO_DESC field)
 unique(sell_thru$SOLD_TO_DESC)
-sell_thru$SOLD_TO_DESC = ifelse(sell_thru$SOLD_TO_DESC == "BEST BUY CO INC","BB","RSL")
+sell_thru$SOLD_TO_DESC = ifelse(sell_thru$SOLD_TO_DESC == "Best Buy Stores","BB","RSL")
 unique(sell_thru$SOLD_TO_DESC)
 
 # ===== Retrieve sell-in data ===== #
